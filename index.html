@@ -233,13 +233,13 @@ var plot_data_point_on_img_viewer_block = function(data_point, time_sec){
   // console.log("plot_point_x = "+plot_point_x);
   // console.log("plot_point_y = "+plot_point_y);
 
-  // clockGroup.append("svg:circle")
-  //                 .attr("stroke", "black")
-  //                 .attr("fill", data_point.color)
-  //                 .attr("cx", - img_half_width + scaled_x)
-  //                 .attr("cy", - image_circle_radius + scaled_y )
-  //                 .attr("r", function(d, i) { return 5})
-  //                 .attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+  clockGroup.append("svg:circle")
+                  .attr("stroke", "black")
+                  .attr("fill", data_point.color)
+                  .attr("cx", - img_half_width + scaled_x)
+                  .attr("cy", - image_circle_radius + scaled_y )
+                  .attr("r", function(d, i) { return 5})
+                  .attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
 
 }
 
@@ -331,7 +331,7 @@ var new_draw_radial_line = function(time_sec, color_code){
               .attr("stroke", _color_code)
               .attr("stroke-width", 0.5)
               .attr("fill", "none")
-              .attr("opacity",0.75)
+              .attr("opacity",0.6)
 
   // console.log(line_partition);
   // clock_svg.append("svg:circle")
@@ -528,13 +528,14 @@ setInterval(function() {
 
     if (random_data){
       new_draw_radial_line(second,random_data.color);
+      // plot_data_point_on_img_viewer_block(random_data,second);
     }else{
       new_draw_radial_line(second);
     }
     // var test = img_viewer_block.attr("xlink:href");
     // console.log(test)
     
-  }, 50); 
+  }, 25); 
 
 
   </script>

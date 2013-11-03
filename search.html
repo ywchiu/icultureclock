@@ -1,0 +1,58 @@
+<html>
+  <head>
+  <title>iClock - Searching</title>
+  <link rel="stylesheet" href="bootstrap.css">
+  <script src="jquery.js"></script>
+  <style>
+    h1 {
+      text-align: center;
+    }
+    .d1 {
+
+    }
+  </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <h1>Seaching Photos from Flickr ...</h1>
+      </div>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="thumbnail p1" style:"display:none;">
+            <img src="img/Songshan/1937.jpg">
+          </div>
+        </div>
+
+        <div class="col-sm-6">
+          <div class="thumbnail p2" style:"display:none;">
+            <img src="img/Songshan/2012.jpg">
+          </div>
+        </div>
+    </div>
+  </body>
+  <script>
+
+    $('.p1').hide();
+    $('.p2').hide();
+    setTimeout(function(){
+      $('.p1').show();
+    }, 3000);
+    setTimeout(function(){
+      $('.p2').show();
+    }, 4000);
+    setTimeout(function(){
+      window.location = 'http://localhost:8000/demo.html';
+    }, 6000);
+
+
+  </script>
+  
+
+</html>

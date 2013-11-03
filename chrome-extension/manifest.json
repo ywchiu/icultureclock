@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "iclock",
+  "version": "0.1",
+
+  "browser_action": {
+    "default_title": "iclock"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "jquery.js",
+        "add_link.js"
+      ]
+    }
+  ],
+
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ]
+
+}

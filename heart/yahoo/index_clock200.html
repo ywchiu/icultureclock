@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<style type="text/css">
+  #line{
+    width: 750px;
+    margin: 0px 0;
+    height: 750px;
+   
+  }
+  button {
+    margin: 20px 0 0 20px;
+  }
+</style>
+</head>
+<body>
+  <div id="line"></div>
+  <!--script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.5.0"></script-->
+  <script type="text/javascript" src="d3.js"></script>
+  <script src="jquery.js"></script>
+  <script type="text/javascript">
+
+  function qBerzier(p0,p1,p2,t){
+    var x = (1 - t) * (1 - t) * p0[0] + 2 * t * (1 - t) * p1[0] + t * t * p2[0];
+    var y = (1 - t) * (1 - t) * p0[1] + 2 * t * (1 - t) * p1[1] + t * t * p2[1];
+    return [x,y];
+}
+
+var drawclock=function(vis){
+	var clock=function(ranumber,i){
+
+	for (j=-2; j<=-2; j=j+1){
+    var data = [];
+	    
+    switch(j) {
+      case -5:
+	      data = [0,1.2,2.7,5,7,14,15,16,16.5,18.5,20];
+	      break;	    
+	    case -4:
+	      data = [0,1.5,2.5,5.5,7.5,11.5,12,13,16,19.5,20];
+	      break;		    
+	    case -3:
+	      data = [0,2,3,5,7,11,11,18,17,18,20];
+	      break;	    
+	    case -2:
+	      data = [0,2,4,6,8,10,12,16,17,18,20];
+	      break;	    
+	    case -2:
+        data = [0,1,12,6,12,1,12,1,3,12,10]; 
+        break;
+      case -1:
+        data = [0,0.1,12,0.4,12,7,12,9,0.8,12,10];  
+        break;
+      case -0:
+        data = [0, 1,12,3,7, 12, 14,16,9,12,10];  
+        break;
+	    case 1:
+        data = [0,12,6,12,11,12,8,12,15,12,10];  
+        break;
+	    case 2:
+        data = [0,1,4,12,8,12,11,12,8,12,10];  
+        break;
+	    case 3:
+        data = [0,1,3,5,6,9,11,13,18,19,20];  
+        break;
+	    case 4:
+        data = [0,1.5,3,5.5,7,9.5,11,12.5,17,18,20];  
+        break;
+	    case 5:
+        data = [0,1,3,4,7,9,12,13,17,18,20];  
+        break;
+      default:
+        data = [0,1,3,5,6,9,12,14,17,18,20]; 
+	    }		
+	    var x = d3.scale.linear().domain([0, 10]).range([350, 350+350*Math.cos(Math.PI/10*(i+j)/90)] );
+	    var y = d3.scale.linear().domain([0, 30]).range([350, 350+350*Math.sin(Math.PI/10*(i+j)*3/90)] );
+	    
+	    var line = d3.svg.line() 
+		    .interpolate("cardinal")	    
+	      .x(function(d, i) {
+          return x(i);
+        })
+	      .y(function(d, i) {
+          return y(d, i);
+        })
+	     
+	      
+		//;.interpolate("cardinal")
+		
+	    var path = vis.append("path")
+	      .attr("d", line(data))
+	      .attr("stroke", function() { return "hsl(" + ranumber * 360 + ", 100%, 75%)" })
+	      .attr("stroke-width", "0.5")
+	      .attr("fill", "none")
+	      	        //.attr("opacity", 0.5);
+	        .attr("opacity", function(d) {
+		//console.log("0:"+d+"1:"+j+"2:"+i);
+			if(i%2 == 0)
+				return 1;
+			else 
+				return  1;
+			
+			//return j != i ? 0.2 : 1;
+			});
+	      
+
+	    var totalLength = path.node().getTotalLength();
+	    path
+	      .attr("stroke-dasharray", totalLength + " " + totalLength)
+	      .attr("stroke-dashoffset", totalLength)
+	      .transition()
+		//.duration(3000 + i *1000)
+		.duration(100)
+		.delay(i*100)
+		.ease("linear")
+		.attr("stroke-dashoffset", 0);
+		}
+	}
+    var ranumber = 0.2;	
+    for (i=1; i<=1; i=i+1){
+	//if(i%5 == 0){
+		ranumber = Math.random();
+	//}
+	clock(ranumber,i);
+    }
+}  
+   
+var rclock = function(vis2) {
+  var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, scaleSecs, width;
+
+  fields = function() {
+    var currentTime, data, hour, minute, second;
+    currentTime = new Date();
+    second = currentTime.getSeconds();
+    minute = currentTime.getMinutes();
+    hour = currentTime.getHours() + minute / 60;
+    return data = [
+      {
+        "unit": "seconds",
+        "numeric": second
+      }, {
+        "unit": "minutes",
+        "numeric": minute
+      }, {
+        "unit": "hours",
+        "numeric": hour
+      }
+    ];
+  };
+
+  width = 700;
+
+  height = 700;
+
+  offSetX = 350;
+
+  offSetY = 350;
+
+  pi = Math.PI;
+
+  scaleSecs = d3.scale.linear().domain([1, 60 + 999 / 1000]).range([0, 2 * pi]);
+
+  scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
+
+  scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
+
+
+  clockGroup = vis2.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
+
+  clockGroup.append("svg:circle").attr("r", 350).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "black").attr("stroke-width", 2);
+
+  clockGroup.append("svg:circle").attr("r", 4).attr("fill", "black").attr("class", "clock innercircle");
+
+  render = function(data) {
+    var hourArc, minuteArc, secondArc;
+    clockGroup.selectAll(".clockhand").remove();
+    secondArc = d3.svg.arc().innerRadius(0).outerRadius(270).startAngle(function(d) {
+      return scaleSecs(d.numeric);
+    }).endAngle(function(d) {
+      return scaleSecs(d.numeric);
+    });
+    minuteArc = d3.svg.arc().innerRadius(0).outerRadius(270).startAngle(function(d) {
+      return scaleMins(d.numeric);
+    }).endAngle(function(d) {
+      return scaleMins(d.numeric);
+    });
+    hourArc = d3.svg.arc().innerRadius(0).outerRadius(250).startAngle(function(d) {
+      return scaleHours(d.numeric % 12);
+    }).endAngle(function(d) {
+      return scaleHours(d.numeric % 12);
+    });
+    
+    return clockGroup.selectAll(".clockhand").data(data).enter().append("svg:path").attr("d", function(d) {
+      if (d.unit === "seconds") {
+        return secondArc(d);
+      } else if (d.unit === "minutes") {
+        return minuteArc(d);
+      } else if (d.unit === "hours") {
+        return hourArc(d);
+      }
+    }).attr("class", "clockhand").attr("stroke", "black").attr("stroke-width", function(d) {
+      if (d.unit === "seconds") {
+        return 2;
+      } else if (d.unit === "minutes") {
+        return 3;
+      } else if (d.unit === "hours") {
+        return 3;
+      }
+    }).attr("fill", "none");
+    
+  };
+  
+  setInterval(function() {
+    var data;
+    data = fields();
+    return render(data);
+  }, 1000);    
+  
+};
+var vis = d3.selectAll("#line").append("svg:svg").attr("width", 750).attr("height", 750);
+drawclock(vis);
+var vis2 = vis.append("svg:svg");
+rclock(vis2);
+
+  </script>
+</body>
+</html>

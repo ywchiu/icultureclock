@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<style type="text/css">
+  #line{
+    width: 1000px;
+    margin: 0px 0;
+    height: 1000px;
+   
+  }
+  button {
+    margin: 20px 0 0 20px;
+  }
+</style>
+</head>
+<body>
+<div id="cname">
+    <form>
+       <fieldset>
+          <legend>選擇文化設施</legend>
+          <p>
+             <label>選擇</label>
+             <select id = "icultureList">
+               <option value = "1">台北車站</option>
+	       <option value = "1">臺灣總督府博物館</option>				
+		<option value = "1">總統府</option>					
+		<option value = "1">監察院</option>					
+		<option value = "1">行政院</option>			
+		<option value = "1">臺北賓館</option>				
+		<option value = "1">司法大廈</option>				
+             </select>
+	     <h3>台北車站</h3>
+          </p>
+       </fieldset>
+      
+    </form>  
+</div>
+  <div id="line"></div>
+  <canvas id="panel" width="500" height="333"></canvas>
+  <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.5.0"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="http://paperjs.org/assets/js/paper.js"></script>
+  <script src="jquery.heart.js"></script>
+  
+
+
+  
+  <script type="text/javascript">
+
+var width = 700;
+var height = 700;
+var offSetX = 350;
+var offSetY = 350;
+var inner_circle_radius = 4;  
+var outer_circle_radius = 200;
+
+var secondArc_circle_radius = 170;  
+var minuteArc_circle_radius = 170;  
+var hourArc_circle_radius = 150;  
+
+var img_index = [1,2,3,4,5,6];
+var img_urls = img_index.map(function(one_img_index){
+  var one_img_url = "./img/Taipei_Train_Station/" + one_img_index + ".jpg";
+  $("<img />").attr("src",one_img_url).attr("id","image_id_"+one_img_index).appendTo("body").hide()
+  return("./img/Taipei_Train_Station/" + one_img_index + ".jpg")
+});
+
+var drawclock=function(vis){
+	var clock=function(ranumber,i){
+
+	for (j=-2; j<=2; j=j+1){
+	    var data = d3.range(11).map(function(){return ( i/5)*10});
+	    var x = d3.scale.linear().domain([0, 10]).range([offSetX+inner_circle_radius*Math.cos(Math.PI/2*i/90), offSetX+outer_circle_radius*Math.cos(Math.PI/2*(i+j*3)/90)] );
+	    var y = d3.scale.linear().domain([0, 10]).range([offSetY+inner_circle_radius*Math.sin(Math.PI/2*i/90), offSetY+outer_circle_radius*Math.sin(Math.PI/2*(i+j*3)/90)] );
+	    var line = d3.svg.line() 
+	      .x(function(d,i) {return x(i);})
+	      .y(function(d, i) {return y(i);})
+	//.interpolate("cardinal")
+	    var path = vis.append("path")
+	      .attr("d", line(data))
+	      .attr("stroke", function() { return "hsl(" + ranumber * 360 + ", 100%, 75%)" })
+	      .attr("stroke-width", "1")
+        .attr('opacity', "0.33")
+	      .attr("fill", "none");
+
+	    var totalLength = path.node().getTotalLength();
+	    path
+	      .attr("stroke-dasharray", totalLength + " " + totalLength)
+	      .attr("stroke-dashoffset", totalLength)
+	      .transition()
+		//.duration(3000 + i *1000)
+		.duration(100)
+		.delay(i*100)
+		.ease("linear")
+		.attr("stroke-dashoffset", 0);
+		}
+	}
+    var ranumber = 0.2;	
+    for (i=1; i<=360; i=i+1){
+	if(i%10 == 0){
+		ranumber = Math.random();
+	}
+	clock(ranumber,i);
+    }
+}  
+   
+
+var secondOffset = undefined;
+var rclock = function(vis) {
+  vis2 = vis.append("svg:svg");
+  var clockGroup, fields, height, offSetX, offSetY, pi, render, scaleHours, scaleMins, scaleSecs, width;
+
+  fields = function() {
+    var currentTime, data, hour, minute, second;
+    currentTime = new Date();
+    second = currentTime.getSeconds();
+    if (secondOffset == undefined) {
+      secondOffset = (76 - second) % 60;
+      second = 16;
+    }
+    else {
+      second = (second + secondOffset) % 60;
+    }
+    second += currentTime.getMilliseconds() / 1000;
+    minute = currentTime.getMinutes();
+    hour = currentTime.getHours() + minute / 60;
+    return data = [
+      {
+        "unit": "seconds",
+        "numeric": second
+      }, {
+        "unit": "minutes",
+        "numeric": minute
+      }, {
+        "unit": "hours",
+        "numeric": hour
+      }
+    ];
+  };
+
+ var width = 700;
+var height = 700;
+var offSetX = 350;
+var offSetY = 350;
+var inner_circle_radius = 4;  
+var outer_circle_radius = 200;
+
+var secondArc_circle_radius = 170;  
+var minuteArc_circle_radius = 170;  
+var hourArc_circle_radius = 150;  
+    window.last_second = undefined;
+    window.last_color = undefined;
+
+  pi = Math.PI;
+
+  
+
+  scaleSecs = d3.scale.linear().domain([1, 60 + 999 / 1000]).range([0, 2 * pi]);
+
+  scaleMins = d3.scale.linear().domain([0, 59 + 59 / 60]).range([0, 2 * pi]);
+
+  scaleHours = d3.scale.linear().domain([0, 11 + 59 / 60]).range([0, 2 * pi]);
+
+
+  clockGroup = vis2.append("svg:g").attr("transform", "translate(" + offSetX + "," + offSetY + ")");
+
+  clockGroup.append("svg:circle").attr("r", outer_circle_radius).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "black").attr("stroke-width", 2);
+
+  clockGroup.append("svg:circle").attr("r", inner_circle_radius).attr("fill", "black").attr("class", "clock innercircle");
+
+  render = function(data) {
+    var hourArc, minuteArc, secondArc;
+    clockGroup.selectAll(".clockhand").remove();
+    vis.selectAll("image").remove();
+    
+    secondArc = d3.svg.arc().innerRadius(0).outerRadius(secondArc_circle_radius).startAngle(function(d) {
+      return scaleSecs(d.numeric);
+    }).endAngle(function(d) {
+      return scaleSecs(d.numeric);
+    });
+
+    minuteArc = d3.svg.arc().innerRadius(0).outerRadius(minuteArc_circle_radius).startAngle(function(d) {
+      return scaleMins(d.numeric);
+    }).endAngle(function(d) {
+      return scaleMins(d.numeric);
+    });
+
+    hourArc = d3.svg.arc().innerRadius(0).outerRadius(hourArc_circle_radius).startAngle(function(d) {
+      return scaleHours(d.numeric % 12);
+    }).endAngle(function(d) {
+      return scaleHours(d.numeric % 12);
+    });
+
+    recently_sec = data[0].numeric;
+
+    image_circle_radius = 300;
+    img_half_width = 70;
+    img_half_height = 70;
+    img_center_x = offSetX + image_circle_radius*Math.cos(-Math.PI/2 + Math.PI*2*(recently_sec-1)/60);
+    img_center_y = offSetY + image_circle_radius*Math.sin(-Math.PI/2 + Math.PI*2*(recently_sec-1)/60);
+
+
+    // console.log(data[0]);
+    var img_index = [1,2,3,4,5,6];
+    var img_urls = img_index.map(function(one_img_index){
+      
+      return("./img/Taipei_Train_Station/" + one_img_index + ".jpg")
+    });
+
+    // console.log(img_urls);
+
+    var img_selector = function(time_sec){
+      var img_index = Math.ceil(recently_sec / 10) - 1;
+      if (img_index < 0 ){
+        img_index = img_index + 6
+      };
+      return(img_urls[img_index])
+      
+    };
+
+    var random_color_selector = function(time_sec){
+
+      var img_index = Math.ceil(recently_sec / 10) - 1;
+      if (img_index < 0 ){
+        img_index = img_index + 6
+      };
+      img_index_plus = img_index + 1
+      var img_el = $("#image_id_"+img_index_plus)[0];
+      var img_el_w = img_el.width;
+      var img_el_h = img_el.height;
+
+      // console.log("img_el_w = "+img_el_w)
+      // console.log("img_el_h = "+img_el_h)
+
+      var ctx = $('#panel')[0];
+      ctx.width = img_el_w;
+      ctx.height = img_el_h;
+      ctx.getContext("2d").drawImage(img_el, 0, 0, img_el_w, img_el_h);
+
+      var random_pick_x = Math.floor(Math.random()*img_el_w);
+      var random_pick_y = Math.floor(Math.random()*img_el_h);
+
+      // console.log("random_pick_x = "+random_pick_x)
+      // console.log("random_pick_y = "+random_pick_y)
+
+
+      var imageData = ctx.getContext("2d").getImageData(random_pick_x, random_pick_y, img_el_w, img_el_h);
+      var pixel = imageData.data;    
+      var pixelColor = "rgba("+pixel[0]+", "+pixel[1]+", "+pixel[2]+", "+pixel[3]+")";
+      // console.log("pixelColor = "+pixelColor)
+
+      if (window.last_second == undefined) {
+        //console.log(time_sec);
+        window.lastColor = pixelColor;
+        console.log(window.last_second);
+        window.last_second = time_sec;
+        console.log(window.last_second);
+      }
+      else {
+        if ((time_sec - window.last_second+60)%60 >= 1) {
+          window.last_second = time_sec;
+          window.lastColor = pixelColor;
+        }
+        else {
+          pixelColor = window.lastColor;
+        }
+      }
+
+      return({"x":random_pick_x,
+              "y":random_pick_y,
+              "scaled_x":Math.floor(random_pick_x*2*img_half_width/img_el_w),
+              "scaled_y":Math.floor(random_pick_x*2*img_half_width/img_el_w),
+              "color":pixelColor  })
+              
+    };
+
+    var random_point = random_color_selector(recently_sec);
+    // console.log(random_point);
+    // console.log(recently_sec)
+    // console.log(img_selector(recently_sec))
+
+    var imgs = vis2.selectAll("image").data([0]);
+    imgs.enter()
+      .append("svg:image")
+      .attr("xlink:href", img_selector(recently_sec))
+      .attr("x", Math.round(img_center_x) - img_half_width)
+      .attr("y", Math.round(img_center_y) - img_half_height)
+      .attr("width",  img_half_width*2)
+      .attr("height", img_half_height*2)
+      .attr("transform", "rotate(" + (recently_sec-1)/60*360 +" "+img_center_x + " " + img_center_y + ")");
+
+    // var points = vis2.selectAll(".point").data([0]);
+        
+    //     points.enter().append("svg:circle")
+    //      .attr("stroke", "black")
+    //      .attr("fill", random_point.color)
+    //      .attr("cx", Math.round(img_center_x) - img_half_width + random_point.scaled_x)
+    //      .attr("cy", Math.round(img_center_y) - img_half_height + random_point.scaled_y)
+    //      .attr("r", function(d, i) { return 2})
+    //      .attr("transform", "rotate(" + (recently_sec-1)/60*360 +" "+img_center_x + " " + img_center_y + ")");
+    // console.log((recently_sec-1)/60*360);
+    var i = recently_sec;
+
+    var x_inner = function(jj){
+      return(offSetX + inner_circle_radius*Math.cos(-Math.PI/2 + Math.PI*2*(recently_sec-1 + jj/5)/60)) 
+    }
+    var x_outer = function(jj){
+      return(offSetX + outer_circle_radius*Math.cos(-Math.PI/2 + Math.PI*2*(recently_sec-1 + jj/5)/60)) 
+    }
+
+    var y_inner = function(jj){
+      return(offSetX + inner_circle_radius*Math.sin(-Math.PI/2 + Math.PI*2*(recently_sec-1 + jj/5)/60)) 
+    }
+    var y_outer = function(jj){
+      return(offSetX + outer_circle_radius*Math.sin(-Math.PI/2 + Math.PI*2*(recently_sec-1 + jj/5)/60)) 
+    }
+
+    for (j=-0; j<=0; j=j+1){
+      //FIXME
+      var data = d3.range(11).map(function(){return ( i/5)*10});
+      var x = d3.scale.linear().domain([0, 11]).range([x_inner(j), x_outer(j)] );
+      var y = d3.scale.linear().domain([0, 11]).range([y_inner(j), y_outer(j)] );
+
+      // var x = d3.scale.linear().domain([0, 10]).range([offSetX+inner_circle_radius*Math.cos(Math.PI/2*i/90), offSetX+outer_circle_radius*Math.cos(Math.PI/2*(i+j*3)/90)] );
+      // var y = d3.scale.linear().domain([0, 10]).range([offSetY+inner_circle_radius*Math.sin(Math.PI/2*i/90), offSetY+outer_circle_radius*Math.sin(Math.PI/2*(i+j*3)/90)] );
+
+      var line = d3.svg.line() 
+        .x(function(d,i) {return x(i);})
+        .y(function(d, i) {return y(i);})
+  //.interpolate("cardinal")
+      var path = vis.append("path")
+        .attr("d", line(data))
+        .attr("stroke", function() { return random_point.color })
+        .attr("stroke-width", "1")
+        .attr("fill", "none")
+        .attr('opacity', function(){return 0.65});
+
+      var totalLength = path.node().getTotalLength();
+      path
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+    //.duration(3000 + i *1000)
+    .duration(100)
+    .ease("linear")
+    .attr("stroke-dashoffset", 0);
+    }
+    
+    
+    
+    return clockGroup.selectAll(".clockhand").data(data).enter().append("svg:path").attr("d", function(d) {
+      if (d.unit === "seconds") {
+        return secondArc(d);
+      } else if (d.unit === "minutes") {
+        return minuteArc(d);
+      } else if (d.unit === "hours") {
+        return hourArc(d);
+      }
+    }).attr("class", "clockhand").attr("stroke", "black").attr("stroke-width", function(d) {
+      if (d.unit === "seconds") {
+        return 2;
+      } else if (d.unit === "minutes") {
+        return 3;
+      } else if (d.unit === "hours") {
+        return 3;
+      }
+    }).attr("fill", "none");
+    
+  };
+  
+  setInterval(function() {
+    var data;
+    data = fields();
+    return render(data);
+  }, 30);    
+  
+};
+var vis = d3.selectAll("#line").append("svg:svg").attr("width", 750).attr("height", 750);
+// drawclock(vis);
+// var vis2 = vis.append("svg:svg");
+rclock(vis);
+
+  </script>
+</body>
+<script>
+  $(document).ready(function(){
+
+    offset = 100;
+    x = [375+offset, 375, 375-offset, 375];
+    y = [375, 375+offset, 375, 375-offset];
+
+    index = 1;
+
+    setTimeout(function() {
+      $('#line').heart(x[index], y[index], 2);
+      index = (index + 1) % 4;
+      setInterval(function() {
+        $('#line').heart(x[index], y[index], 2);
+        index = (index + 1) % 4;
+      }, 15000);
+    }, 7000);
+  });
+</script>
+</html>

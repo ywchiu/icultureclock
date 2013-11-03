@@ -389,6 +389,29 @@ var _last_update_time_t1;
 var _update_period_t2 = 10;
 var _last_update_time_t2;
 
+var _update_period_t3 = 60/8;
+var _last_update_time_t3;
+
+
+var customer_view_moving = function(second) {
+    c = 375;
+    r = 100;
+    x2 = [375, 375+r, 375, 375-r];
+    y2 = [375-r, 375, 375+r, 375];
+    x4 = [375+r, 375+r, 375-r, 375-r];
+    y4 = [375-r, 375+r, 375+r, 375-r];
+    x = [c, c+r, c+r, c+r, c, c-r, c-r, c-r];
+    y = [c-r, c-r, c, c+r, c+r, c+r, c, c-r];
+    z = [2,2,2,2, 2, 2, 2, 2]
+    index = parseInt(second%8);
+    //console.log(index);
+    //setInterval(function(){
+    $('#clock > svg').heart(x[index], y[index], z[index]);
+      //console.log(x[index], y[index], z[index]);
+      //index = (index + 1) % 4;
+      //}, 5000);
+    }
+
 
 setInterval(function() {
     set_img_viewer_bl(_select_img_index)
@@ -414,6 +437,8 @@ setInterval(function() {
       set_img_viewer_bl(_select_img_index);
 
     }
+
+
 
 
     // if (second % 10 === 0){
@@ -450,6 +475,19 @@ setInterval(function() {
     }
 
     
+    if (_last_update_time_t3){
+      if (second - _last_update_time_t3 >= _update_period_t3){
+          _last_update_time_t3 = second 
+
+          customer_view_moving(second);
+      }
+
+    }else{
+      _last_update_time_t3 = second 
+
+      customer_view_moving(second);
+
+    }
 
 
     secondArc_rotate(second);

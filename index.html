@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<style type="text/css">
+  #clock{
+    
+  }
+  
+</style>
+</head>
+<body>
+  <div id="clock"></div>
+  <div id="clock_bg"></div>
+  <canvas id="panel"></canvas>
+  <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.5.0"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+  
+  
+  <script type="text/javascript">
+
+  $('#panel').hide();
+
+var width = 700;
+var height = 700;
+var clock_center_x = 350;
+var clock_center_y = 350;
+var inner_circle_radius = 4;  
+var outer_circle_radius = 200;
+
+var secondArc_height = 170;  
+var secondArc_width = 2;
+
+var minuteArc_height = 150;  
+var minuteArc_width = 4;
+
+
+var hourArc_height = 100;  
+var hourArc_width = 8;
+
+var sec_notation_h = 5;
+var sec_notation_w = 2;
+
+// var clock_bg_svg = d3.selectAll("#clock_bg").append("svg:svg").attr("width", 750).attr("height", 750);
+
+// var BG_clockGroup = clock_bg_svg.append("svg:g").attr("transform", "translate(" + clock_center_x + "," + clock_center_y + ")");
+
+var clock_svg = d3.selectAll("#clock").append("svg:svg").attr("width", 750).attr("height", 750);//.attr("transform", "translate(" + clock_center_x + "," + clock_center_y + ")");
+
+var clock_svg2 = clock_svg.append("svg:svg");
+
+var clock_svg2_bg = clock_svg2.append("svg:g").attr("render-order",-1);
+
+var clockGroup = clock_svg2.append("svg:g").attr("transform", "translate(" + clock_center_x + "," + clock_center_y + ")");
+
+  // clockGroup.append("svg:circle").attr("r", outer_circle_radius).attr("fill", "none").attr("class", "clock outercircle").attr("stroke", "black").attr("stroke-width", 2);
+
+  clockGroup.append("svg:circle").attr("r", inner_circle_radius).attr("fill", "black").attr("class", "clock innercircle");
+
+// var clockHands = clockGroup.append("svg:svg").append("svg:g");
+
+var secondArc = clockGroup.append("svg:rect").attr("x",-secondArc_width/2).attr("y",0).attr("width",secondArc_width).attr("height",secondArc_height).attr("transform", "rotate(" + 180 +" "+ 0 + " " + 0 + ")").attr("opacity",0);
+
+var minuteArc = clockGroup.append("svg:rect").attr("x",-minuteArc_width/2).attr("y",0).attr("width",minuteArc_width).attr("height",minuteArc_height).attr("transform", "rotate(" + 180 +" "+ 0 + " " + 0 + ")");
+
+var hourArc = clockGroup.append("svg:rect").attr("x",-hourArc_width/2).attr("y",0).attr("width",hourArc_width).attr("height",hourArc_height).attr("transform", "rotate(" + 180 +" "+ 0 + " " + 0 + ")");
+
+// for (ii=0;ii<60;ii++){
+//   var sec_notation_degree = ii/60*360;
+
+//   // var angle_degree = - 90 + time_sec/60*360;
+//   var angle_degree_pi = sec_notation_degree/360*2*Math.PI;
+
+//   // var start_point_x = clock_center_x;
+//   // var start_point_y = clock_center_y;
+//   // var end_point_x = clock_center_x + outer_circle_radius*Math.cos(angle_degree_pi);
+//   // var end_point_y = clock_center_y + outer_circle_radius*Math.sin(angle_degree_pi);
+// 	// var _adjust_x = end_point_x-sec_notation_w/2;
+  
+//   var start_point_x = clock_center_x + outer_circle_radius*Math.cos(angle_degree_pi);
+//   var start_point_y = clock_center_y + outer_circle_radius*Math.sin(angle_degree_pi);
+
+//   var end_point_x = clock_center_x + (outer_circle_radius+sec_notation_h)*Math.cos(angle_degree_pi);
+//   var end_point_y = clock_center_y + (outer_circle_radius+sec_notation_h)*Math.sin(angle_degree_pi);  
+
+//   var _adjust_x = start_point_x - sec_notation_w;
+//   var __adjust_x = end_point_x + sec_notation_w;
+//   // var real_sec_notation_h = sec_notation_h + outer_circle_radius
+
+// 	var hourArc = clock_svg2.append("svg:rect").attr("x",_adjust_x).attr("y",start_point_y)
+//   .attr("width",sec_notation_w).attr("height",sec_notation_h)
+//   .attr("rx",__adjust_x).attr("ry",end_point_y)
+//   .attr("transform", "rotate(" + 180 + sec_notation_degree +" "+ clock_center_x + " " + clock_center_y + ")");	
+
+//   // var hourArc = clock_svg2.append("svg:line").attr("x1",start_point_x).attr("y1",start_point_y)
+//   //                       .attr("x2",end_point_x).attr("y2",end_point_y); 
+// }
+
+
+
+var secondArc_rotate = function(time_sec){
+  var angle_degree = 180 + time_sec/60*360;
+  secondArc.attr("transform", "rotate(" +  angle_degree +" "+ 0 + " " + 0 + ")");
+};
+
+var minuteArc_rotate = function(time_min){
+  var angle_degree = 180 + time_min/60*360;
+  minuteArc.attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+};
+
+var hourArc_rotate = function(time_hr){
+  var angle_degree = 180 + time_hr/12*360;
+  hourArc.attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+};
+
+
+var img_index = [0,1,2,3,4,5];
+var img_urls = img_index.map(function(one_img_index){
+  var real_img_index = one_img_index+1;
+  var one_img_url = "./_img/Taipei_Train_Station/" + real_img_index + ".jpg";
+  $("<img />").attr("src",one_img_url).attr("id","image_id_"+one_img_index).appendTo("body").hide()
+  return("./_img/Taipei_Train_Station/" + real_img_index + ".jpg")
+});
+
+var test_img_url = "./_img/Taipei_Train_Station/1.jpg";
+var image_circle_radius = 350;
+var img_half_width = 70;
+var img_half_height = 70;
+
+
+var img_viewer_block = clockGroup.append("svg:image")
+                                  .attr("xlink:href", img_urls[3])
+                                  .attr("x", - img_half_width)
+                                  .attr("y", - image_circle_radius)
+                                  .attr("width",  img_half_width*2)
+                                  .attr("height", img_half_height*2);
+
+
+var set_img_viewer_bl = function(img_index){
+  if (img_index >= img_urls.length ){
+    _img_index = img_index % img_urls.length
+  }
+  else{
+    _img_index = img_index 
+  }
+
+  console.log("_img_index = "+_img_index)
+
+  var img_el = $("#image_id_"+_img_index)[0];
+  var img_el_w = img_el.width;
+  var img_el_h = img_el.height;
+  var new_img_height = img_half_height*img_el_h / img_el_w
+
+  var ctx = $('#panel')[0];
+  
+  ctx.width = img_el_w;
+  ctx.height = img_el_h;
+  ctx.getContext("2d").drawImage(img_el, 0, 0, img_el_w, img_el_h);
+
+  img_viewer_block.attr("xlink:href", img_urls[_img_index])
+                  // .attr("height", new_img_height*2);
+}
+
+
+var random_point_selector = function(){
+  var ctx = $('#panel')[0];
+  
+  var img_el_w = ctx.width;
+  var img_el_h = ctx.height;
+  
+  var random_pick_x = Math.floor(Math.random()*img_el_w);
+  var random_pick_y = Math.floor(Math.random()*img_el_h);
+
+      // console.log("random_pick_x = "+random_pick_x)
+      // console.log("random_pick_y = "+random_pick_y)
+
+
+  var imageData = ctx.getContext("2d").getImageData(random_pick_x, random_pick_y, random_pick_x+1, random_pick_y+1);
+  var pixel = imageData.data;    
+  var pixelColor = "rgba("+pixel[0]+", "+pixel[1]+", "+pixel[2]+", "+pixel[3]+")";
+  console.log("pixelColor = "+pixelColor)
+
+  return({"x":random_pick_x,"y":random_pick_y,"color":pixelColor})
+
+}
+
+
+var plot_data_point_on_img_viewer_block = function(data_point, time_sec){
+
+  var ctx = $('#panel')[0];
+  
+  var img_el_w = ctx.width;
+  var img_el_h = ctx.height;
+
+  var angle_degree = time_sec/60*360;
+  var angle_degree_pi = (time_sec/60*360 - 90 )/360*2*Math.PI;
+  var scaled_x = data_point.x / img_el_w * (img_half_width*2);
+  var scaled_y = data_point.y / img_el_h * (img_half_height*2);
+
+  var plot_point_x = image_circle_radius*Math.cos(angle_degree_pi) - img_half_width ;
+  var plot_point_y = image_circle_radius*Math.sin(angle_degree_pi);
+
+  // console.log("data_point.x = "+data_point.x);
+  // console.log("data_point.y = "+data_point.y);
+  // console.log("scaled_x = "+scaled_x);
+  // console.log("scaled_y = "+scaled_y);
+  // console.log("plot_point_x = "+plot_point_x);
+  // console.log("plot_point_y = "+plot_point_y);
+
+  // clockGroup.append("svg:circle")
+  //                 .attr("stroke", "black")
+  //                 .attr("fill", data_point.color)
+  //                 .attr("cx", - img_half_width + scaled_x)
+  //                 .attr("cy", - image_circle_radius + scaled_y )
+  //                 .attr("r", function(d, i) { return 5})
+  //                 .attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+
+}
+
+
+var img_viewer_block_rotation = function(time_sec){
+  var angle_degree = time_sec/60*360;
+  img_viewer_block.attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+};
+
+var lineFunction = d3.svg.line()
+                            .x(function(d) { return d.x; })
+                            .y(function(d) { return d.y; })
+                            .interpolate("linear");
+
+
+var radial_line_points_n = 20;
+var noise_r = 3;
+
+var draw_radial_line = function(time_sec, color_code){
+  var angle_degree = 180 + time_sec/60*360;
+  
+  var linedata = new Array();
+  var linedata_y = d3.range(radial_line_points_n);
+
+  for (one_data_y in linedata_y){
+    var random_noise = (Math.random()-0.5)*2*noise_r;
+    var one_data_y_scaled = parseFloat(one_data_y)/(radial_line_points_n-1)*outer_circle_radius
+    linedata.push({"x":random_noise,"y":one_data_y_scaled})
+  }
+
+  // linedata.reverse();
+  console.log(linedata)
+
+  if (color_code){
+    _color_code = color_code
+  }else{
+    _color_code = "blue"
+  }
+
+  clockGroup.append("path")
+              .attr("d", lineFunction(linedata))
+              .attr("stroke", _color_code)
+              .attr("stroke-width", 1)
+              .attr("fill", "none")
+              .attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")")
+              .attr("z-index",-100)
+              
+              
+  // img_viewer_block.attr("transform", "rotate(" + angle_degree +" "+ 0 + " " + 0 + ")");
+};
+
+
+var new_draw_radial_line = function(time_sec, color_code){
+  var angle_degree = - 90 + time_sec/60*360;
+  var angle_degree_pi = angle_degree/360*2*Math.PI;
+
+  var start_point_x = clock_center_x;
+  var start_point_y = clock_center_y;
+
+  var end_point_x = clock_center_x + outer_circle_radius*Math.cos(angle_degree_pi);
+  var end_point_y = clock_center_y + outer_circle_radius*Math.sin(angle_degree_pi);
+
+  var line_partition = d3.range(radial_line_points_n);
+
+  var radial_line_points_n_m1 = radial_line_points_n -1;
+  
+  var x_func = d3.scale.linear().domain([0, radial_line_points_n_m1]).range([start_point_x, end_point_x] );
+  var y_func = d3.scale.linear().domain([0, radial_line_points_n_m1]).range([start_point_y, end_point_y] );
+  
+  var linedata = new Array();
+  for (i in line_partition){
+    var random_noise_x = (Math.random()-0.5)*2*noise_r;
+    var random_noise_y = (Math.random()-0.5)*2*noise_r;
+    var data_x = x_func(i) + random_noise_x
+    var data_y = y_func(i) + random_noise_y
+    linedata.push({"x":data_x,"y":data_y})
+  }
+
+  console.log(linedata)
+
+  if (color_code){
+    _color_code = color_code
+  }else{
+    _color_code = "blue"
+  }
+
+  clock_svg2_bg.append("path")
+              .attr("d", lineFunction(linedata))
+              .attr("stroke", _color_code)
+              .attr("stroke-width", 0.5)
+              .attr("fill", "none")
+              .attr("opacity",0.75)
+
+  // console.log(line_partition);
+  // clock_svg.append("svg:circle")
+  //                 .attr("stroke", "black")
+  //                 .attr("fill", color_code)
+  //                 .attr("cx", end_point_x)
+  //                 .attr("cy", end_point_y)
+  //                 .attr("r", function(d, i) { return 5})
+                  
+};
+
+var new_draw_radial_point = function(time_sec, color_code, scale_r){
+  var angle_degree = - 90 + time_sec/60*360;
+  var angle_degree_pi = angle_degree/360*2*Math.PI;
+
+  var start_point_x = clock_center_x;
+  var start_point_y = clock_center_y;
+
+  if (scale_r){
+    var new_r = scale_r*outer_circle_radius  
+  }else{
+    var new_r = outer_circle_radius  
+  }
+  
+
+  var end_point_x = clock_center_x + new_r*Math.cos(angle_degree_pi);
+  var end_point_y = clock_center_y + new_r*Math.sin(angle_degree_pi);
+
+  var line_partition = d3.range(radial_line_points_n);
+
+  var radial_line_points_n_m1 = radial_line_points_n -1;
+  
+  var x_func = d3.scale.linear().domain([0, radial_line_points_n_m1]).range([start_point_x, end_point_x] );
+  var y_func = d3.scale.linear().domain([0, radial_line_points_n_m1]).range([start_point_y, end_point_y] );
+  
+  var linedata = new Array();
+  for (i in line_partition){
+    var random_noise_x = (Math.random()-0.5)*2*noise_r;
+    var random_noise_y = (Math.random()-0.5)*2*noise_r;
+    var data_x = x_func(i) + random_noise_x
+    var data_y = y_func(i) + random_noise_y
+    linedata.push({"x":data_x,"y":data_y})
+  }
+
+  console.log(linedata)
+
+  if (color_code){
+    _color_code = color_code
+  }else{
+    _color_code = "blue"
+  }
+
+  // clock_svg2_bg.append("path")
+  //             .attr("d", lineFunction(linedata))
+  //             .attr("stroke", _color_code)
+  //             .attr("stroke-width", 0.5)
+  //             .attr("fill", "none")
+  //             .attr("opacity",0.75)
+
+  console.log(line_partition);
+  clock_svg.append("svg:circle")
+                  // .attr("stroke", "black")
+                  .attr("fill", color_code)
+                  .attr("cx", end_point_x)
+                  .attr("cy", end_point_y)
+                  .attr("r", function(d, i) { return 2})
+                  
+};
+
+for (ii=0;ii<60;ii++){
+  new_draw_radial_point(ii,"#ccc",1.1)
+}
+
+var _select_img_index = 0;
+var random_data;
+var _update_period_t1 = 1;
+var _last_update_time_t1;
+
+var _update_period_t2 = 10;
+var _last_update_time_t2;
+
+
+setInterval(function() {
+    set_img_viewer_bl(_select_img_index)
+
+    var currentTime = new Date();
+    var second = currentTime.getSeconds();
+    // console.log(second);
+
+    // plot_data_point_on_img_viewer_block(random_point_selector(),second);
+    
+    if (_last_update_time_t2){
+      if (second - _last_update_time_t2 >= _update_period_t2){
+          _last_update_time_t2 = second 
+
+          _select_img_index = _select_img_index + 1;
+          set_img_viewer_bl(_select_img_index);
+      }
+
+    }else{
+      _last_update_time_t2 = second
+
+      _select_img_index = _select_img_index + 1;
+      set_img_viewer_bl(_select_img_index);
+
+    }
+
+
+    // if (second % 10 === 0){
+    //   _select_img_index = _select_img_index + 1;
+    //   set_img_viewer_bl(_select_img_index);
+
+    //   random_data = random_point_selector();
+    // }    
+
+    // if (second % 10 === 0){
+    //   _select_img_index = _select_img_index + 1;
+    //   set_img_viewer_bl(_select_img_index);
+
+    //   random_data = random_point_selector();
+    // }
+    
+
+    second += currentTime.getMilliseconds() / 1000;
+    minute = currentTime.getMinutes() + second / 60;
+    hour = currentTime.getHours() + minute / 60;
+
+    if (_last_update_time_t1){
+      if (second - _last_update_time_t1 >= _update_period_t1){
+          _last_update_time_t1 = second 
+
+          random_data = random_point_selector();
+      }
+
+    }else{
+      _last_update_time_t1 = second 
+
+      random_data = random_point_selector();
+
+    }
+
+    
+
+
+    secondArc_rotate(second);
+    minuteArc_rotate(minute);
+    hourArc_rotate(hour);
+
+    
+
+    img_viewer_block_rotation(second);  
+
+    if (random_data){
+      new_draw_radial_line(second,random_data.color);
+    }else{
+      new_draw_radial_line(second);
+    }
+    // var test = img_viewer_block.attr("xlink:href");
+    // console.log(test)
+    
+  }, 50); 
+
+
+  </script>
+</body>
+</html>

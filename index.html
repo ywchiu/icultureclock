@@ -15,7 +15,7 @@
       color: white;
       position: absolute;
       top: 500px;
-      left: 275px;
+      left: 280px;
       z-index: 9999;
       font-size: 16px;
       font-family: "Century Gothic Bold";
@@ -195,7 +195,7 @@ var random_point_selector = function(){
   var pixel = imageData.data;    
 
   var check_rgb = pixel[0] + pixel[1] + pixel[2];
-  // console.log("check_rgb = ",check_rgb)
+  console.log("check_rgb = ",check_rgb)
 
   if (check_rgb > 760){
     pixel[0] = 231;
@@ -292,14 +292,8 @@ var draw_radial_line = function(time_sec, color_code){
 };
 
 
-var new_draw_radial_line = function(time_sec, color_code, angle_velocity_w){
-  if (angle_velocity_w){
-    new_time_sec = angle_velocity_w*time_sec
-  }else{
-    new_time_sec = time_sec
-  }
-
-  var angle_degree = - 90 + new_time_sec/60*360;
+var new_draw_radial_line = function(time_sec, color_code){
+  var angle_degree = - 90 + time_sec/60*360;
   var angle_degree_pi = angle_degree/360*2*Math.PI;
 
   var start_point_x = clock_center_x;
@@ -425,7 +419,7 @@ var _last_update_time_t3;
 
 var customer_view_moving = function(second) {
     c = 375;
-    r = 100;
+    r = 140;
     x2 = [375, 375+r, 375, 375-r];
     y2 = [375-r, 375, 375+r, 375];
     x4 = [375+r, 375+r, 375-r, 375-r];
@@ -446,11 +440,9 @@ var update_sec;
 setInterval(function() {
     set_img_viewer_bl(_select_img_index)
     update_sec = $.now() / 1000
-    update_sec = 1.5*update_sec;
 
     var currentTime = new Date();
     var second = currentTime.getSeconds();
-    second = 1.5*second;
     // console.log(second);
 
     // plot_data_point_on_img_viewer_block(random_point_selector(),second);
@@ -489,7 +481,7 @@ setInterval(function() {
     // }
     
 
-    second += 1.5*currentTime.getMilliseconds() / 1000;
+    second += currentTime.getMilliseconds() / 1000;
     minute = currentTime.getMinutes() + second / 60;
     hour = currentTime.getHours() + minute / 60;
 
@@ -562,17 +554,17 @@ setInterval(function() {
     //index = parseInt(second%8);
     //console.log(index);
     setTimeout(function(){
-      index = parseInt((new Date()).getSeconds()/ 7.5*1.5);
+      index = parseInt((new Date()).getSeconds()/ 7.5);
       console.log(index);
       $('#clock > svg').heart(x[index], y[index], z[index]*0.9);
     }, 2000);
     setInterval(function(){
-      index = parseInt((new Date()).getSeconds()/ 7.5*1.5);
+      index = parseInt((new Date()).getSeconds()/ 7.5);
       console.log(index);
       $('#clock > svg').heart(x[index], y[index], z[index]*0.9);
       //console.log(x[index], y[index], z[index]);
       //index = (index + 1) % 4;
-    }, 7500/3*2);
+    }, 7500);
     //}
   </script>
 

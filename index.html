@@ -15,6 +15,7 @@
   <canvas id="panel"></canvas>
   <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?2.5.0"></script>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="jquery.heart.js"></script>
 
   
   
@@ -145,7 +146,7 @@ var set_img_viewer_bl = function(img_index){
     _img_index = img_index 
   }
 
-  console.log("_img_index = "+_img_index)
+  //console.log("_img_index = "+_img_index)
 
   var img_el = $("#image_id_"+_img_index)[0];
   var img_el_w = img_el.width;
@@ -179,7 +180,7 @@ var random_point_selector = function(){
   var imageData = ctx.getContext("2d").getImageData(random_pick_x, random_pick_y, random_pick_x+1, random_pick_y+1);
   var pixel = imageData.data;    
   var pixelColor = "rgba("+pixel[0]+", "+pixel[1]+", "+pixel[2]+", "+pixel[3]+")";
-  console.log("pixelColor = "+pixelColor)
+  //console.log("pixelColor = "+pixelColor)
 
   return({"x":random_pick_x,"y":random_pick_y,"color":pixelColor})
 
@@ -293,7 +294,7 @@ var new_draw_radial_line = function(time_sec, color_code){
     linedata.push({"x":data_x,"y":data_y})
   }
 
-  console.log(linedata)
+  //console.log(linedata)
 
   if (color_code){
     _color_code = color_code
@@ -366,7 +367,7 @@ var new_draw_radial_point = function(time_sec, color_code, scale_r){
   //             .attr("fill", "none")
   //             .attr("opacity",0.75)
 
-  console.log(line_partition);
+  //console.log(line_partition);
   clock_svg.append("svg:circle")
                   // .attr("stroke", "black")
                   .attr("fill", color_code)
@@ -458,6 +459,9 @@ setInterval(function() {
     
 
     img_viewer_block_rotation(second);  
+    //FIXME
+    //move(second);
+
 
     if (random_data){
       new_draw_radial_line(second,random_data.color);
@@ -470,6 +474,27 @@ setInterval(function() {
   }, 50); 
 
 
+  </script>
+
+  <script>
+    function move(second) {
+    c = 375;
+    r = 100;
+    x2 = [375, 375+r, 375, 375-r];
+    y2 = [375-r, 375, 375+r, 375];
+    x4 = [375+r, 375+r, 375-r, 375-r];
+    y4 = [375-r, 375+r, 375+r, 375-r];
+    x = [c, c+r, c+r, c+r, c, c-r, c-r, c-r];
+    y = [c-r, c-r, c, c+r, c+r, c+r, c, c-r];
+    z = [2,2,2,2, 2, 2, 2, 2]
+    index = parseInt(second%8);
+    //console.log(index);
+    //setInterval(function(){
+    $('#clock > svg').heart(x[index], y[index], z[index]);
+      //console.log(x[index], y[index], z[index]);
+      //index = (index + 1) % 4;
+      //}, 5000);
+    }
   </script>
 </body>
 </html>

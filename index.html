@@ -406,7 +406,7 @@ var customer_view_moving = function(second) {
     index = parseInt(second%8);
     //console.log(index);
     //setInterval(function(){
-    $('#clock > svg').heart(x[index], y[index], z[index]);
+    //$('#clock > svg').heart(x[index], y[index], z[index]);
       //console.log(x[index], y[index], z[index]);
       //index = (index + 1) % 4;
       //}, 5000);
@@ -516,7 +516,7 @@ setInterval(function() {
   </script>
 
   <script>
-    function move(second) {
+    //function move(second) {
     c = 375;
     r = 100;
     x2 = [375, 375+r, 375, 375-r];
@@ -526,14 +526,21 @@ setInterval(function() {
     x = [c, c+r, c+r, c+r, c, c-r, c-r, c-r];
     y = [c-r, c-r, c, c+r, c+r, c+r, c, c-r];
     z = [2,2,2,2, 2, 2, 2, 2]
-    index = parseInt(second%8);
+    //index = parseInt(second%8);
     //console.log(index);
-    //setInterval(function(){
-    $('#clock > svg').heart(x[index], y[index], z[index]);
+    setTimeout(function(){
+      index = parseInt((new Date()).getSeconds()/ 7.5);
+      console.log(index);
+      $('#clock > svg').heart(x[index], y[index], z[index]);
+    }, 2000);
+    setInterval(function(){
+      index = parseInt((new Date()).getSeconds()/ 7.5);
+      console.log(index);
+      $('#clock > svg').heart(x[index], y[index], z[index]);
       //console.log(x[index], y[index], z[index]);
       //index = (index + 1) % 4;
-      //}, 5000);
-    }
+    }, 7500);
+    //}
   </script>
 </body>
 </html>

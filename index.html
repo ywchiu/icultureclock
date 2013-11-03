@@ -366,7 +366,7 @@ var new_draw_radial_point = function(time_sec, color_code, scale_r){
     linedata.push({"x":data_x,"y":data_y})
   }
 
-  console.log(linedata)
+  //console.log(linedata)
 
   if (color_code){
     _color_code = color_code
@@ -426,9 +426,10 @@ var customer_view_moving = function(second) {
       //}, 5000);
     }
 
-
+var update_sec;
 setInterval(function() {
     set_img_viewer_bl(_select_img_index)
+    update_sec = $.now() / 1000
 
     var currentTime = new Date();
     var second = currentTime.getSeconds();
@@ -437,15 +438,15 @@ setInterval(function() {
     // plot_data_point_on_img_viewer_block(random_point_selector(),second);
     
     if (_last_update_time_t2){
-      if (second - _last_update_time_t2 >= _update_period_t2){
-          _last_update_time_t2 = second 
+      if (update_sec - _last_update_time_t2 >= _update_period_t2){
+          _last_update_time_t2 = update_sec 
 
           _select_img_index = _select_img_index + 1;
           set_img_viewer_bl(_select_img_index);
       }
 
     }else{
-      _last_update_time_t2 = second
+      _last_update_time_t2 = update_sec
 
       _select_img_index = _select_img_index + 1;
       set_img_viewer_bl(_select_img_index);
@@ -475,31 +476,31 @@ setInterval(function() {
     hour = currentTime.getHours() + minute / 60;
 
     if (_last_update_time_t1){
-      if (second - _last_update_time_t1 >= _update_period_t1){
-          _last_update_time_t1 = second 
+      if (update_sec - _last_update_time_t1 >= _update_period_t1){
+          _last_update_time_t1 = update_sec
 
           random_data = random_point_selector();
       }
 
     }else{
-      _last_update_time_t1 = second 
+      _last_update_time_t1 = update_sec
 
       random_data = random_point_selector();
 
     }
 
-    
+    // console.log("_last_update_time_t3 = "+_last_update_time_t3)    
     if (_last_update_time_t3){
-      if (second - _last_update_time_t3 >= _update_period_t3){
-          _last_update_time_t3 = second 
+      if (update_sec - _last_update_time_t3 >= _update_period_t3){
+          _last_update_time_t3 = update_sec 
 
-          customer_view_moving(second);
+          //customer_view_moving(second);
       }
 
     }else{
-      _last_update_time_t3 = second 
+      _last_update_time_t3 = update_sec 
 
-      customer_view_moving(second);
+      //customer_view_moving(second);
 
     }
 
